@@ -79,4 +79,4 @@ def plot_data(data_dict, res="full"):
         plt.bar(keys, values)
         plt.show()
 
-plot_data(sort_data(-5, import_data("siren_data_train.csv")))
+plot_data(sort_data(-3, import_data("siren_data_train.csv")))

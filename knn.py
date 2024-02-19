@@ -1,6 +1,21 @@
 import math
+import numpy as np
+import matplotlib.pyplot as plt
+def solve_linear_least_squares(A, b, ignore_indices):
+    A_modified = np.delete(A, ignore_indices, axis=1)
+    x, residuals, _, _ = np.linalg.lstsq(A, b, rcond=None)
+    return x
 
-# Sample data
+def normalize_by_index(list_of_lists):
+    # Find the maximum value for each index across all sublists
+    max_values = [max(sublist[i] for sublist in list_of_lists) for i in range(len(list_of_lists[0]))]
+    
+    # Normalize elements in each sublist
+    normalized_lists = [[element / max_values[i] for i, element in enumerate(sublist)] for sublist in list_of_lists]
+    
+    return normalized_lists
+
+
 data = open(r"siren_data_train.csv")
 data = data.read()
 data = data.split("\n")
@@ -13,9 +28,11 @@ for i in range(1,len(data)):
 def euclidean_distance(point1, point2):
     distance = 0
     temp = 0
-    for i in range(6,7):
+    for i in [6,7,10]:
         if i != 4:
             distance += (point1[i] - point2[i-temp]) ** 2
+        elif i ==10:
+            distance += 100*(point1[i] - point2[i-temp]) ** 2
         else:
             temp = 1
     return math.sqrt(distance)
@@ -53,12 +70,23 @@ def predict_hearing_signal(train_data, test_instance, k):
         return 1
     else:
         return 0
+acc_rey = []
 
-counter = 0
-test_len = 156
+test_len = 136 
+for j in range(6,7):
+    counter = 0
+    for i in range(1,test_len):
+        result = predict_hearing_signal((data[test_len:]), data[i], k=7)
+        if result == 1:
+            counter += 1
+    acc_rey.append(counter / test_len)
+plt.plot(acc_rey)
+print(acc_rey)
+plt.show()
+"""
+ls_rey = []
+for i in data[1:test_len]:
+    ls_rey.append([i[5],i[8],i[9],i[10],i[11],i[12]])
 
-for i in range(1,test_len):
-    result = predict_hearing_signal(data[test_len:], data[i], k=7)
-    if result == 1:
-        counter += 1
-print(counter / test_len)
+print(np.array(ls_rey))
+"""
